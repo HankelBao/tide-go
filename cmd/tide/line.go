@@ -125,7 +125,6 @@ func (line *Line) Debug() string {
 
 func (line *Line) UpdateLineStyle(lexer chroma.Lexer) {
 	if lexer == nil {
-		LogAppend("Null Lexer")
 		return
 	}
 	line.lineStyle.LoadFromSourceCode(line.String(), lexer)

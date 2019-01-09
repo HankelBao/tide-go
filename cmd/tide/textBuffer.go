@@ -19,6 +19,7 @@ type TextBuffer struct {
 	topLine      int
 	lineOffset   int
 
+	name  string
 	url   string
 	lexer chroma.Lexer
 }
@@ -27,6 +28,7 @@ func NewTextBuffer() *TextBuffer {
 	textBuffer := new(TextBuffer)
 	textBuffer.cursor = new(Cursor)
 	textBuffer.InitFirstLine()
+	textBuffer.name = "[No Name]"
 	return textBuffer
 }
 
@@ -209,6 +211,7 @@ func (tb *TextBuffer) Load(url string) {
 	defer f.Close()
 
 	tb.lexer = lexers.Match(f.Name())
+	tb.name = f.Name()
 
 	tb.lines = nil
 	var scanner = bufio.NewScanner(f)

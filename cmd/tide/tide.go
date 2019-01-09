@@ -13,7 +13,7 @@ var (
 	UISelectors     []UISelector
 	focusUISelector UISelector
 
-	bufferline *BufferLine
+	statusLine *StatusLine
 	textEditor *TextEditor
 )
 
@@ -27,23 +27,23 @@ func main() {
 	colorTheme.LoadColorTheme("emacs")
 
 	firstTextBuffer := NewTextBuffer()
-	firstTextBuffer.Load("./test.go")
+	//firstTextBuffer.Load("./test.go")
 
 	textBuffers = append(textBuffers, firstTextBuffer)
 
-	bufferline = NewBufferLine()
+	statusLine = InitStatusLine()
 	textEditor = NewTextEditor(firstTextBuffer)
 
-	bufferline.displayRange.horizentalOffset = NewAbsoluteLength(0)
-	bufferline.displayRange.verticalOffset = NewAbsoluteLength(0)
-	bufferline.displayRange.width = NewRefLength([]*Length{}, WidthScale)
-	bufferline.displayRange.height = NewAbsoluteLength(2)
-	UIElements = append(UIElements, UIElement(bufferline))
+	statusLine.displayRange.width = NewRefLength([]*Length{}, WidthScale)
+	statusLine.displayRange.height = NewAbsoluteLength(1)
+	statusLine.displayRange.horizentalOffset = NewAbsoluteLength(0)
+	statusLine.displayRange.verticalOffset = NewRefLength([]*Length{statusLine.displayRange.height}, HeightScale)
+	UIElements = append(UIElements, UIElement(statusLine))
 
-	textEditor.displayRange.horizentalOffset = NewAbsoluteLength(0)
-	textEditor.displayRange.verticalOffset = NewRefLength([]*Length{bufferline.displayRange.height}, NoScale)
 	textEditor.displayRange.width = NewRefLength([]*Length{}, WidthScale)
-	textEditor.displayRange.height = NewRefLength([]*Length{bufferline.displayRange.height}, HeightScale)
+	textEditor.displayRange.height = NewRefLength([]*Length{statusLine.displayRange.height}, HeightScale)
+	textEditor.displayRange.horizentalOffset = NewAbsoluteLength(0)
+	textEditor.displayRange.verticalOffset = NewAbsoluteLength(0)
 	UIElements = append(UIElements, UIElement(textEditor))
 	UISelectors = append(UISelectors, UISelector(textEditor))
 

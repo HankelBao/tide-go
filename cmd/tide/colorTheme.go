@@ -7,8 +7,10 @@ import (
 )
 
 type ColorTheme struct {
-	styleMap     map[chroma.TokenType]*tcell.Style
-	defaultStyle *tcell.Style
+	styleMap map[chroma.TokenType]*tcell.Style
+
+	defaultStyle         *tcell.Style
+	reversedDefaultStyle *tcell.Style
 }
 
 func InitColorTheme() *ColorTheme {
@@ -29,6 +31,8 @@ func (ct *ColorTheme) LoadColorTheme(themeName string) bool {
 	}
 
 	ct.defaultStyle = ConvertStyleEntryToTCellStyle(styleManager.Get(chroma.Text))
+	reversedStyle := (*ct.defaultStyle).Reverse(true)
+	ct.reversedDefaultStyle = &reversedStyle
 
 	return true
 }

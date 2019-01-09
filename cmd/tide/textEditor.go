@@ -55,5 +55,6 @@ func (te *TextEditor) Key(eventKey *tcell.EventKey) {
 	case tcell.KeyCtrlQ:
 		signalDoExit <- true
 	}
+	statusLine.Display()
 	te.Display()
 }

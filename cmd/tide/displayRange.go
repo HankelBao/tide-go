@@ -13,7 +13,7 @@ func (dr *DisplayRange) Display(lines []*Line, lineOffset int) {
 	width := dr.width.GetAbsoluteValue()
 	height := dr.height.GetAbsoluteValue()
 
-	for i := 0; i <= height; i++ {
+	for i := 0; i < height; i++ {
 		for j := lineOffset; j <= lineOffset+width; j++ {
 			realX, realY := xOffset+j-lineOffset, yOffset+i
 			if i < len(lines) {
