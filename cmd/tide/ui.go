@@ -1,10 +1,19 @@
 package main
 
+import (
+	"github.com/gdamore/tcell"
+)
+
 type UIElement interface {
-	GetContent()
-	GetDisplayRange()
+	Display()
 }
 
 type UISelector interface {
-	Key()
+	Key(*tcell.EventKey)
+}
+
+func DisplayUIElements() {
+	for _, uiElement := range UIElements {
+		uiElement.Display()
+	}
 }
