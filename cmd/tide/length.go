@@ -14,19 +14,21 @@ type Length struct {
 	refScale      int
 }
 
-func NewAbsoluteLength(absoluteValue int) *Length {
+func NewLength() *Length {
 	length := new(Length)
-	length.absolute = true
-	length.absoluteValue = absoluteValue
+	length.AbsoluteLength(0)
 	return length
 }
 
-func NewRefLength(refLengths []*Length, refScale int) *Length {
-	length := new(Length)
+func (length *Length) AbsoluteLength(absoluteValue int) {
+	length.absolute = true
+	length.absoluteValue = absoluteValue
+}
+
+func (length *Length) RefLength(refLengths []*Length, refScale int) {
 	length.absolute = false
 	length.refLengths = refLengths
 	length.refScale = refScale
-	return length
 }
 
 func (l *Length) GetAbsoluteValue() int {

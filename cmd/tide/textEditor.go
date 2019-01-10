@@ -6,15 +6,37 @@ import (
 
 type TextEditor struct {
 	displayRange *DisplayRange
-	textBuffer   *TextBuffer
+	onFocus      bool
+
+	textBuffer *TextBuffer
 }
 
 func NewTextEditor(firstTextBuffer *TextBuffer) *TextEditor {
 	te := new(TextEditor)
-	te.displayRange = new(DisplayRange)
+	te.displayRange = NewDisplayRange()
+	te.onFocus = false
 	firstTextBuffer.UpdateDisplayRange(te.displayRange)
 	te.textBuffer = firstTextBuffer
 	return te
+}
+
+func (te *TextEditor) OpenFile(fileName string) {
+	if fileName == "" {
+		return
+	}
+	var targetTextBuffer *TextBuffer = nil
+	for _, textBuffer := range textBuffers {
+		if textBuffer.url == fileName {
+			targetTextBuffer = textBuffer
+			break
+		}
+	}
+	if targetTextBuffer == nil {
+		targetTextBuffer = NewTextBuffer()
+		targetTextBuffer.Load(fileName)
+		textBuffers = append(textBuffers, targetTextBuffer)
+	}
+	te.SwitchTextBuffer(targetTextBuffer)
 }
 
 func (te *TextEditor) SwitchTextBuffer(newTB *TextBuffer) {
@@ -26,7 +48,9 @@ func (te *TextEditor) SwitchTextBuffer(newTB *TextBuffer) {
 func (te *TextEditor) Display() {
 	displayLines := te.textBuffer.GetLines()
 	te.displayRange.Display(displayLines, te.textBuffer.lineOffset)
-	te.displayRange.ShowCursor(te.textBuffer.GetCursorInDisplayRange())
+	if te.onFocus == true {
+		te.displayRange.ShowCursor(te.textBuffer.GetCursorInDisplayRange())
+	}
 	screen.Show()
 }
 
@@ -52,9 +76,16 @@ func (te *TextEditor) Key(eventKey *tcell.EventKey) {
 		te.textBuffer.Tab()
 	case tcell.KeyCtrlS:
 		te.textBuffer.Save()
-	case tcell.KeyCtrlQ:
-		signalDoExit <- true
 	}
+	textEditor.Display()
 	statusLine.Display()
+}
+
+func (te *TextEditor) Focus() {
+	te.onFocus = true
 	te.Display()
+}
+
+func (te *TextEditor) UnFocus() {
+	te.onFocus = false
 }

@@ -7,6 +7,15 @@ type DisplayRange struct {
 	height           *Length
 }
 
+func NewDisplayRange() *DisplayRange {
+	displayRange := new(DisplayRange)
+	displayRange.horizentalOffset = NewLength()
+	displayRange.verticalOffset = NewLength()
+	displayRange.width = NewLength()
+	displayRange.height = NewLength()
+	return displayRange
+}
+
 func (dr *DisplayRange) Display(lines []*Line, lineOffset int) {
 	xOffset := dr.horizentalOffset.GetAbsoluteValue()
 	yOffset := dr.verticalOffset.GetAbsoluteValue()
@@ -23,6 +32,8 @@ func (dr *DisplayRange) Display(lines []*Line, lineOffset int) {
 					screen.SetContent(realX, realY, r, nil, style)
 					continue
 				}
+				screen.SetContent(realX, realY, ' ', nil, lines[i].lineStyle.GetDefaultStyle())
+				continue
 			}
 			screen.SetContent(realX, realY, ' ', nil, *colorTheme.defaultStyle)
 		}

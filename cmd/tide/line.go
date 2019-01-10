@@ -3,7 +3,7 @@ package main
 import "bytes"
 import "github.com/alecthomas/chroma"
 
-const GapSize = 10
+const GapSize = 20
 
 type Line struct {
 	left      []byte

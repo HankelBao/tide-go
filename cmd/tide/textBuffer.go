@@ -152,7 +152,6 @@ func (tb *TextBuffer) Backspace() {
 			// Notice: i-1 will always be larger than 0 because
 			// tabReferenceOffset is larger or equal to 0 and i is larger than tabR.O.
 			if tb.lines[lineNum].Bytes()[i-1] == ' ' {
-				LogAppendInt(i)
 				tb.lines[lineNum].Backspace(i)
 				tb.CursorLeft()
 				deletedTab = true

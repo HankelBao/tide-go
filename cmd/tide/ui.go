@@ -10,10 +10,12 @@ type UIElement interface {
 
 type UISelector interface {
 	Key(*tcell.EventKey)
+	Focus()
+	UnFocus()
 }
 
-func DisplayUIElements() {
-	for _, uiElement := range UIElements {
-		uiElement.Display()
-	}
+func RefreshAllUIElements() {
+	textEditor.Display()
+	statusLine.Display()
+	fuzzySwitcher.Display()
 }

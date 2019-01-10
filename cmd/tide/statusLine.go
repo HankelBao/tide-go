@@ -9,23 +9,22 @@ type StatusLine struct {
 
 func InitStatusLine() *StatusLine {
 	statusLine := new(StatusLine)
-	statusLine.displayRange = new(DisplayRange)
+	statusLine.displayRange = NewDisplayRange()
 	statusLine.statusLine = NewLine()
-	statusLine.statusLine.lineStyle.WithDefault(*colorTheme.reversedDefaultStyle)
+	statusLine.statusLine.lineStyle.WithDefault(*colorTheme.reversedStyle)
 	return statusLine
 }
 
 func (sl *StatusLine) Display() {
 	statusLineWidth := sl.displayRange.width.GetAbsoluteValue()
 
-	errorInfo := "E:11 W:22"
 	fileNameInfo := textEditor.textBuffer.name
 
 	lineNumStr := strconv.Itoa(textEditor.textBuffer.cursor.lineNum)
 	offsetStr := strconv.Itoa(textEditor.textBuffer.cursor.offset)
 	cursorInfo := "Ln " + lineNumStr + ", Col " + offsetStr
 
-	statusLineInfo := CombineLine(statusLineWidth, []string{errorInfo, fileNameInfo}, []string{cursorInfo})
+	statusLineInfo := CombineLine(statusLineWidth, []string{fileNameInfo}, []string{cursorInfo})
 
 	sl.statusLine.Load(statusLineInfo)
 
@@ -37,8 +36,12 @@ func CombineLine(width int, left []string, right []string) string {
 	divider := "  "
 	combinedLine := make([]byte, width)
 	var combinedLeft string
-	for _, item := range left {
-		combinedLeft = combinedLeft + divider + item
+	for index, item := range left {
+		if index == 0 {
+			combinedLeft = item
+		} else {
+			combinedLeft = combinedLeft + divider + item
+		}
 	}
 	var combinedRight string
 	for _, item := range right {

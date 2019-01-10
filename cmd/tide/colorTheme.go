@@ -9,8 +9,13 @@ import (
 type ColorTheme struct {
 	styleMap map[chroma.TokenType]*tcell.Style
 
-	defaultStyle         *tcell.Style
-	reversedDefaultStyle *tcell.Style
+	defaultStyle        *tcell.Style
+	reversedStyle       *tcell.Style
+	boldStyle           *tcell.Style
+	boldUnderlinedStyle *tcell.Style
+
+	statusLineStyle         *tcell.Style
+	fuzzySwitcherInputStyle *tcell.Style
 }
 
 func InitColorTheme() *ColorTheme {
@@ -32,7 +37,12 @@ func (ct *ColorTheme) LoadColorTheme(themeName string) bool {
 
 	ct.defaultStyle = ConvertStyleEntryToTCellStyle(styleManager.Get(chroma.Text))
 	reversedStyle := (*ct.defaultStyle).Reverse(true)
-	ct.reversedDefaultStyle = &reversedStyle
+	boldStyle := (*ct.defaultStyle).Bold(true)
+	boldUnderlinedStyle := boldStyle.Underline(true)
+
+	ct.reversedStyle = &reversedStyle
+	ct.boldStyle = &boldStyle
+	ct.boldUnderlinedStyle = &boldUnderlinedStyle
 
 	return true
 }

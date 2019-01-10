@@ -50,3 +50,7 @@ func (ls *LineStyle) GetStyleAt(offset int) tcell.Style {
 	}
 	return ls.defaultStyle
 }
+
+func (ls *LineStyle) GetDefaultStyle() tcell.Style {
+	return ls.defaultStyle
+}

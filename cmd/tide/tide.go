@@ -9,12 +9,12 @@ var (
 	textBuffers []*TextBuffer
 	colorTheme  *ColorTheme
 
-	UIElements      []UIElement
 	UISelectors     []UISelector
 	focusUISelector UISelector
 
-	statusLine *StatusLine
-	textEditor *TextEditor
+	statusLine    *StatusLine
+	textEditor    *TextEditor
+	fuzzySwitcher *FuzzySwitcher
 )
 
 func main() {
@@ -32,24 +32,32 @@ func main() {
 	textBuffers = append(textBuffers, firstTextBuffer)
 
 	statusLine = InitStatusLine()
+	fuzzySwitcher = InitFuzzySwitcher()
 	textEditor = NewTextEditor(firstTextBuffer)
 
-	statusLine.displayRange.width = NewRefLength([]*Length{}, WidthScale)
-	statusLine.displayRange.height = NewAbsoluteLength(1)
-	statusLine.displayRange.horizentalOffset = NewAbsoluteLength(0)
-	statusLine.displayRange.verticalOffset = NewRefLength([]*Length{statusLine.displayRange.height}, HeightScale)
-	UIElements = append(UIElements, UIElement(statusLine))
+	fuzzySwitcher.displayRange.width.RefLength([]*Length{}, WidthScale)
+	fuzzySwitcher.displayRange.height.AbsoluteLength(1)
+	fuzzySwitcher.displayRange.horizentalOffset.AbsoluteLength(0)
+	fuzzySwitcher.displayRange.verticalOffset.RefLength([]*Length{fuzzySwitcher.displayRange.height}, HeightScale)
 
-	textEditor.displayRange.width = NewRefLength([]*Length{}, WidthScale)
-	textEditor.displayRange.height = NewRefLength([]*Length{statusLine.displayRange.height}, HeightScale)
-	textEditor.displayRange.horizentalOffset = NewAbsoluteLength(0)
-	textEditor.displayRange.verticalOffset = NewAbsoluteLength(0)
-	UIElements = append(UIElements, UIElement(textEditor))
+	statusLine.displayRange.width.RefLength([]*Length{}, WidthScale)
+	statusLine.displayRange.height.AbsoluteLength(1)
+	statusLine.displayRange.horizentalOffset.AbsoluteLength(0)
+	statusLine.displayRange.verticalOffset.RefLength([]*Length{fuzzySwitcher.displayRange.height, statusLine.displayRange.height}, HeightScale)
+
+	textEditor.displayRange.width.RefLength([]*Length{}, WidthScale)
+	textEditor.displayRange.height.RefLength([]*Length{statusLine.displayRange.height, fuzzySwitcher.displayRange.height}, HeightScale)
+	textEditor.displayRange.horizentalOffset.AbsoluteLength(0)
+	textEditor.displayRange.verticalOffset.AbsoluteLength(0)
 	UISelectors = append(UISelectors, UISelector(textEditor))
 
-	focusUISelector = UISelector(textEditor)
-
 	ScreenInit()
+
+	RefreshAllUIElements()
+
+	focusUISelector = UISelector(textEditor)
+	focusUISelector.Focus()
+
 	go EventLoop()
 
 	<-signalDoExit
