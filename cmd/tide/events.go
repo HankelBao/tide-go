@@ -11,12 +11,10 @@ func EventLoop() {
 		event = screen.PollEvent()
 		switch e := event.(type) {
 		case *tcell.EventKey:
-			if ExecuteGlobalBinding(e) == true {
-				continue
-			}
 			if focusUISelector != nil {
 				focusUISelector.Key(e)
 			}
+			ExecuteGlobalBinding(e)
 		case *tcell.EventResize:
 			RefreshAllUIElements()
 		}

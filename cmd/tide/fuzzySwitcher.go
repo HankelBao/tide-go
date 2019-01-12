@@ -82,7 +82,7 @@ func (fs *FuzzySwitcher) Key(eventKey *tcell.EventKey) {
 		}
 	case tcell.KeyBackspace2:
 		if fs.cursorOffset > fs.cursorStart {
-			fs.inputLine.Backspace(fs.cursorOffset)
+			fs.inputLine.Delete(fs.cursorOffset)
 			fs.cursorOffset--
 		}
 		fs.UpdateResults()

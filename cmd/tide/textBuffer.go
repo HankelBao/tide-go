@@ -15,9 +15,10 @@ type TextBuffer struct {
 	lines  []*Line
 	cursor *Cursor
 
+	topLine    int
+	lineOffset int
+
 	displayRange *DisplayRange
-	topLine      int
-	lineOffset   int
 
 	name  string
 	url   string
@@ -152,7 +153,7 @@ func (tb *TextBuffer) Backspace() {
 			// Notice: i-1 will always be larger than 0 because
 			// tabReferenceOffset is larger or equal to 0 and i is larger than tabR.O.
 			if tb.lines[lineNum].Bytes()[i-1] == ' ' {
-				tb.lines[lineNum].Backspace(i)
+				tb.lines[lineNum].Delete(i)
 				tb.CursorLeft()
 				deletedTab = true
 			} else {
@@ -160,7 +161,7 @@ func (tb *TextBuffer) Backspace() {
 			}
 		}
 		if deletedTab == false {
-			tb.lines[lineNum].Backspace(offset)
+			tb.lines[lineNum].Delete(offset)
 			tb.CursorLeft()
 		}
 		tb.UpdateLineStyle(lineNum)

@@ -27,13 +27,12 @@ func main() {
 	colorTheme.LoadColorTheme("emacs")
 
 	firstTextBuffer := NewTextBuffer()
-	//firstTextBuffer.Load("./test.go")
 
 	textBuffers = append(textBuffers, firstTextBuffer)
 
 	statusLine = InitStatusLine()
 	fuzzySwitcher = InitFuzzySwitcher()
-	textEditor = NewTextEditor(firstTextBuffer)
+	textEditor = InitTextEditor(firstTextBuffer)
 
 	fuzzySwitcher.displayRange.width.RefLength([]*Length{}, WidthScale)
 	fuzzySwitcher.displayRange.height.AbsoluteLength(1)

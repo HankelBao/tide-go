@@ -13,9 +13,6 @@ type ColorTheme struct {
 	reversedStyle       *tcell.Style
 	boldStyle           *tcell.Style
 	boldUnderlinedStyle *tcell.Style
-
-	statusLineStyle         *tcell.Style
-	fuzzySwitcherInputStyle *tcell.Style
 }
 
 func InitColorTheme() *ColorTheme {

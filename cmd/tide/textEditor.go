@@ -11,7 +11,7 @@ type TextEditor struct {
 	textBuffer *TextBuffer
 }
 
-func NewTextEditor(firstTextBuffer *TextBuffer) *TextEditor {
+func InitTextEditor(firstTextBuffer *TextBuffer) *TextEditor {
 	te := new(TextEditor)
 	te.displayRange = NewDisplayRange()
 	te.onFocus = false

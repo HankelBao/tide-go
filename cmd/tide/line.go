@@ -47,7 +47,7 @@ func (line *Line) Insert(offset int, content byte) {
 	}
 }
 
-func (line *Line) Backspace(offset int) {
+func (line *Line) Delete(offset int) {
 	if offset == len(line.left)+len(line.gapBuffer) {
 		if len(line.gapBuffer) > 0 {
 			line.gapBuffer = line.gapBuffer[:len(line.gapBuffer)-1]
