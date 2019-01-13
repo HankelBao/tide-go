@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/gdamore/tcell"
+    "github.com/gdamore/tcell"
 )
 
 type UIElement interface {
@@ -17,5 +17,15 @@ type UISelector interface {
 func RefreshAllUIElements() {
 	textEditor.Display()
 	statusLine.Display()
-	fuzzySwitcher.Display()
+	fileSelector.Display()
+}
+
+func InitUIFocus(uiSelector UISelector) {
+	focusUISelector = uiSelector
+}
+
+func SwitchUIFocus(targetUISelector UISelector) {
+	focusUISelector.UnFocus()
+	focusUISelector = UISelector(targetUISelector)
+	focusUISelector.Focus()
 }
