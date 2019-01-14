@@ -1,7 +1,7 @@
 package main
 
 import (
-    "github.com/gdamore/tcell"
+	"github.com/gdamore/tcell"
 )
 
 type UIElement interface {
@@ -16,6 +16,7 @@ type UISelector interface {
 
 func RefreshAllUIElements() {
 	textEditor.Display()
+	autocompleteList.Display()
 	statusLine.Display()
 	fileSelector.Display()
 }

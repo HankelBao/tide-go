@@ -40,6 +40,10 @@ func (dr *DisplayRange) Display(lines []*Line, lineOffset int) {
 	}
 }
 
+func (dr *DisplayRange) GetScreenPos(xOffset int, yOffset int) (int, int) {
+	return dr.horizentalOffset.GetAbsoluteValue() + xOffset, dr.verticalOffset.GetAbsoluteValue() + yOffset
+}
+
 func (dr *DisplayRange) ShowCursor(x int, y int) {
 	realX := dr.horizentalOffset.GetAbsoluteValue() + x
 	realY := dr.verticalOffset.GetAbsoluteValue() + y

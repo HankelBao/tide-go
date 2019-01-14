@@ -6,5 +6,5 @@ type Cursor struct {
 }
 
 func (c *Cursor) Get() (int, int) {
-	return c.lineNum, c.offset
+	return c.offset, c.lineNum
 }

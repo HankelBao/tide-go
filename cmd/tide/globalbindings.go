@@ -9,7 +9,7 @@ func ExecuteGlobalBinding(eventKey *tcell.EventKey) bool {
 	switch key {
 	case tcell.KeyCtrlQ:
 		signalDoExit <- true
-	case tcell.KeyCtrlJ:
+	case tcell.KeyEsc:
 		SwitchUIFocus(textEditor)
 	case tcell.KeyCtrlP:
 		SwitchUIFocus(fileSelector)

@@ -12,8 +12,9 @@ var (
 
 	focusUISelector UISelector
 
-	statusLine *StatusLine
-	textEditor *TextEditor
+	statusLine       *StatusLine
+	textEditor       *TextEditor
+	autocompleteList *AutocompleteList
 )
 
 func main() {
@@ -32,9 +33,10 @@ func main() {
 	statusLine = InitStatusLine()
 	fileSelector = InitFileSelector()
 	textEditor = InitTextEditor(firstTextBuffer)
+	autocompleteList = InitAutocompleteList()
 
 	fileSelector.displayRange.width.RefLength([]*Length{}, WidthScale)
-	fileSelector.displayRange.height.AbsoluteLength(1)
+	fileSelector.displayRange.height.AbsoluteLength(0)
 	fileSelector.displayRange.horizentalOffset.AbsoluteLength(0)
 	fileSelector.displayRange.verticalOffset.RefLength([]*Length{fileSelector.displayRange.height}, HeightScale)
 

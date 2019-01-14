@@ -30,6 +30,7 @@ func (sl *StatusLine) Display() {
 
 	sl.displayRange.Display([]*Line{sl.statusLine}, 0)
 
+	screen.Show()
 }
 
 func CombineLine(width int, left []string, right []string) string {

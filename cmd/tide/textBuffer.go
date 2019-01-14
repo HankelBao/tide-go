@@ -3,7 +3,11 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"os"
+	"os/exec"
+	"path/filepath"
+	"strconv"
 
 	"github.com/alecthomas/chroma"
 	"github.com/alecthomas/chroma/lexers"
@@ -20,9 +24,10 @@ type TextBuffer struct {
 
 	displayRange *DisplayRange
 
-	name  string
-	url   string
-	lexer chroma.Lexer
+	name     string
+	url      string
+	fileType string
+	lexer    chroma.Lexer
 }
 
 func NewTextBuffer() *TextBuffer {
@@ -59,7 +64,7 @@ func (tb *TextBuffer) GetLines() []*Line {
 }
 
 func (tb *TextBuffer) GetCursorInDisplayRange() (int, int) {
-	lineNum, offset := tb.cursor.Get()
+	offset, lineNum := tb.cursor.Get()
 	return offset - tb.lineOffset, lineNum - tb.topLine
 }
 
@@ -74,7 +79,7 @@ func (tb *TextBuffer) CursorLeft() {
 }
 
 func (tb *TextBuffer) CursorRight() {
-	lineNum, offset := tb.cursor.Get()
+	offset, lineNum := tb.cursor.Get()
 	if offset+1 > tb.lines[lineNum].Len() {
 		return
 	}
@@ -120,6 +125,16 @@ func (tb *TextBuffer) CursorDown() {
 	tb.CursorOffsetAdjust()
 }
 
+func (tb *TextBuffer) GlobalOffset() int {
+	byteOffset := 0
+	for i := 0; i < tb.cursor.lineNum; i++ {
+		length := tb.lines[i].Len()
+		byteOffset += length + 1
+	}
+	byteOffset += tb.cursor.offset
+	return byteOffset
+}
+
 func (tb *TextBuffer) UpdateLineStyle(lineNum int) {
 	if lineNum > len(tb.lines)-1 {
 		return
@@ -128,13 +143,14 @@ func (tb *TextBuffer) UpdateLineStyle(lineNum int) {
 }
 
 func (tb *TextBuffer) Insert(r rune) {
-	lineNum, offset := tb.cursor.Get()
+	offset, lineNum := tb.cursor.Get()
 	if offset > tb.lines[lineNum].Len() {
 		return
 	}
 	tb.lines[lineNum].Insert(offset, byte(r))
 	tb.UpdateLineStyle(lineNum)
 	tb.CursorRight()
+	tb.UpdateAutocompleteItems()
 }
 
 func (tb *TextBuffer) Tab() {
@@ -145,7 +161,7 @@ func (tb *TextBuffer) Tab() {
 }
 
 func (tb *TextBuffer) Backspace() {
-	lineNum, offset := tb.cursor.Get()
+	offset, lineNum := tb.cursor.Get()
 	if offset > 0 {
 		deletedTab := false
 		tabReferenceOffset := offset - (TabSize - offset%TabSize)
@@ -178,10 +194,11 @@ func (tb *TextBuffer) Backspace() {
 		tb.UpdateLineStyle(lineNum)
 		tb.CursorUp()
 	}
+	tb.UpdateAutocompleteItems()
 }
 
 func (tb *TextBuffer) Return() {
-	lineNum, offset := tb.cursor.Get()
+	offset, lineNum := tb.cursor.Get()
 	tb.InsertLine(lineNum + 1)
 	extra_content := tb.lines[lineNum].CutContentToEnd(offset)
 	tb.lines[lineNum+1] = NewLine()
@@ -203,15 +220,18 @@ func (tb *TextBuffer) InsertLine(lineNum int) {
 }
 
 func (tb *TextBuffer) Load(url string) {
-	tb.url = url
-	f, err := os.Open(tb.url)
+	f, err := os.Open(url)
 	if err != nil {
 		LogAppend(err.Error())
 	}
 	defer f.Close()
 
 	tb.lexer = lexers.Match(f.Name())
+	tb.fileType = tb.lexer.Config().Name
 	tb.name = f.Name()
+	fullDir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
+	tb.url = fullDir + "/" + tb.name
+	LogAppend(tb.url)
 
 	tb.lines = nil
 	var scanner = bufio.NewScanner(f)
@@ -238,10 +258,57 @@ func (tb *TextBuffer) Save() {
 	}
 	defer f.Close()
 
+	f.WriteString(tb.String())
+}
+
+func (tb *TextBuffer) Buffer() *bytes.Buffer {
 	var b bytes.Buffer
 	for _, line := range tb.lines {
 		b.WriteString(line.String())
 		b.WriteString("\n")
 	}
-	f.WriteString(b.String())
+	return &b
+}
+
+func (tb *TextBuffer) Bytes() []byte {
+	return (*tb.Buffer()).Bytes()
+}
+
+func (tb *TextBuffer) String() string {
+	return (*tb.Buffer()).String()
+}
+
+func (tb *TextBuffer) UpdateAutocompleteItems() {
+
+	globalOffset := strconv.Itoa(tb.GlobalOffset())
+	var buffer bytes.Buffer
+	for _, line := range tb.lines {
+		buffer.WriteString(line.String())
+		buffer.WriteString("\n")
+	}
+
+	var resultBuffer bytes.Buffer
+
+	go func() {
+		c := exec.Command("gocode", "-f=json", "autocomplete", "/home/hankelbao/go/src/github.com/hankelbao/tide/test.go", "c"+globalOffset)
+		c.Stdin = &buffer
+		c.Stdout = &resultBuffer
+		c.Run()
+
+		var res []interface{}
+		json.Unmarshal(resultBuffer.Bytes(), &res)
+
+		if res == nil {
+			return
+		}
+
+		var completeItems []string
+		for _, item := range res[1].([]interface{}) {
+			completeItemName := item.(map[string]interface{})["name"].(string)
+			completeItems = append(completeItems, completeItemName)
+		}
+
+		autocompleteList.LoadItems(completeItems)
+		textEditor.Display()
+	}()
 }

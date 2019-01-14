@@ -51,6 +51,8 @@ func (te *TextEditor) Display() {
 	if te.onFocus == true {
 		te.displayRange.ShowCursor(te.textBuffer.GetCursorInDisplayRange())
 	}
+	autocompleteList.Display()
+	statusLine.Display()
 	screen.Show()
 }
 
@@ -78,7 +80,6 @@ func (te *TextEditor) Key(eventKey *tcell.EventKey) {
 		te.textBuffer.Save()
 	}
 	textEditor.Display()
-	statusLine.Display()
 }
 
 func (te *TextEditor) Focus() {
