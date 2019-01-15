@@ -23,6 +23,7 @@ func RefreshAllUIElements() {
 
 func InitUIFocus(uiSelector UISelector) {
 	focusUISelector = uiSelector
+	focusUISelector.Focus()
 }
 
 func SwitchUIFocus(targetUISelector UISelector) {

@@ -164,7 +164,7 @@ func (tb *TextBuffer) Backspace() {
 	offset, lineNum := tb.cursor.Get()
 	if offset > 0 {
 		deletedTab := false
-		tabReferenceOffset := offset - (TabSize - offset%TabSize)
+		tabReferenceOffset := int((offset-1)/TabSize) * TabSize
 		for i := offset; i > tabReferenceOffset; i-- {
 			// Notice: i-1 will always be larger than 0 because
 			// tabReferenceOffset is larger or equal to 0 and i is larger than tabR.O.
@@ -231,7 +231,6 @@ func (tb *TextBuffer) Load(url string) {
 	tb.name = f.Name()
 	fullDir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
 	tb.url = fullDir + "/" + tb.name
-	LogAppend(tb.url)
 
 	tb.lines = nil
 	var scanner = bufio.NewScanner(f)
@@ -290,7 +289,7 @@ func (tb *TextBuffer) UpdateAutocompleteItems() {
 	var resultBuffer bytes.Buffer
 
 	go func() {
-		c := exec.Command("gocode", "-f=json", "autocomplete", "/home/hankelbao/go/src/github.com/hankelbao/tide/test.go", "c"+globalOffset)
+		c := exec.Command("gocode", "-f=json", "-source", "-builtin", "-unimported-packages", "autocomplete", tb.url, "c"+globalOffset)
 		c.Stdin = &buffer
 		c.Stdout = &resultBuffer
 		c.Run()
