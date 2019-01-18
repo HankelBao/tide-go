@@ -7,6 +7,9 @@ A IDE running in Terminal with modern functionalities.
 * Builtin Color Themes
 * Builtin Hover, Autocomplete, Linting support
 
+![Image for File Switcher](./screenshots/switchfile.png)
+![Image for Go Completion](./screenshots/gocomplete.png)
+
 ## Why?
 
 Why Not?
@@ -15,6 +18,7 @@ There are no shortage of people struggling with Vim/Emacs plugins. Still, the re
 
 ## Current Stage
 
-Only Text Buffers and Color Themes are supported currently.
-
-Feel free to join me if you also agree with the idea.
+- Buffers
+- Fuzzy Switch File
+- Syntax highlight
+- Autocompletion for Golang and Python
