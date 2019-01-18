@@ -11,6 +11,7 @@ type ColorTheme struct {
 
 	defaultStyle        *tcell.Style
 	reversedStyle       *tcell.Style
+	underlinedStyle     *tcell.Style
 	boldStyle           *tcell.Style
 	boldUnderlinedStyle *tcell.Style
 }
@@ -34,10 +35,12 @@ func (ct *ColorTheme) LoadColorTheme(themeName string) bool {
 
 	ct.defaultStyle = ConvertStyleEntryToTCellStyle(styleManager.Get(chroma.Text))
 	reversedStyle := (*ct.defaultStyle).Reverse(true)
+	underlinedStyle := (*ct.defaultStyle).Underline(true)
 	boldStyle := (*ct.defaultStyle).Bold(true)
 	boldUnderlinedStyle := boldStyle.Underline(true)
 
 	ct.reversedStyle = &reversedStyle
+	ct.underlinedStyle = &underlinedStyle
 	ct.boldStyle = &boldStyle
 	ct.boldUnderlinedStyle = &boldUnderlinedStyle
 

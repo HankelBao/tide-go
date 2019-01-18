@@ -16,7 +16,6 @@ type UISelector interface {
 
 func RefreshAllUIElements() {
 	textEditor.Display()
-	autocompleteList.Display()
 	statusLine.Display()
 	fileSelector.Display()
 }
@@ -27,6 +26,9 @@ func InitUIFocus(uiSelector UISelector) {
 }
 
 func SwitchUIFocus(targetUISelector UISelector) {
+	if focusUISelector == targetUISelector {
+		return
+	}
 	focusUISelector.UnFocus()
 	focusUISelector = UISelector(targetUISelector)
 	focusUISelector.Focus()

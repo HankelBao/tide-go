@@ -51,6 +51,7 @@ func (te *TextEditor) Display() {
 	if te.onFocus == true {
 		te.displayRange.ShowCursor(te.textBuffer.GetCursorInDisplayRange())
 	}
+	hintLine.Display()
 	autocompleteList.Display()
 	statusLine.Display()
 	screen.Show()
@@ -62,6 +63,7 @@ func (te *TextEditor) Key(eventKey *tcell.EventKey) {
 	case tcell.KeyRune:
 		var inputRune = eventKey.Rune()
 		te.textBuffer.Insert(inputRune)
+		te.textBuffer.UpdateAutocompleteItems()
 	case tcell.KeyUp:
 		te.textBuffer.CursorUp()
 	case tcell.KeyDown:
@@ -75,9 +77,15 @@ func (te *TextEditor) Key(eventKey *tcell.EventKey) {
 	case tcell.KeyEnter:
 		te.textBuffer.Return()
 	case tcell.KeyTab:
-		te.textBuffer.Tab()
+		if autocompleteList.visible == false {
+			te.textBuffer.Tab()
+		} else {
+			te.textBuffer.InsertString(autocompleteList.GetComplete())
+		}
 	case tcell.KeyCtrlS:
 		te.textBuffer.Save()
+	case tcell.KeyESC:
+		hintLine.visible = false
 	}
 	textEditor.Display()
 }

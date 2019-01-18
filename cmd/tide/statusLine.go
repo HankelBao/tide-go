@@ -23,8 +23,9 @@ func (sl *StatusLine) Display() {
 	lineNumStr := strconv.Itoa(textEditor.textBuffer.cursor.lineNum)
 	offsetStr := strconv.Itoa(textEditor.textBuffer.cursor.offset)
 	cursorInfo := "Ln " + lineNumStr + ", Col " + offsetStr
+	fileTypeInfo := textEditor.textBuffer.fileType
 
-	statusLineInfo := CombineLine(statusLineWidth, []string{fileNameInfo}, []string{cursorInfo})
+	statusLineInfo := CombineLine(statusLineWidth, []string{fileNameInfo}, []string{cursorInfo, fileTypeInfo})
 
 	sl.statusLine.Load(statusLineInfo)
 

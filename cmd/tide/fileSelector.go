@@ -17,8 +17,6 @@ type FileSelector struct {
 	fuzzySelector *FuzzySelector
 }
 
-var fileSelector *FileSelector
-
 func InitFileSelector() *FileSelector {
 	fileSelector := new(FileSelector)
 	fileSelector.displayRange = NewDisplayRange()

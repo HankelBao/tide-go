@@ -3,11 +3,8 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"encoding/json"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"strconv"
 
 	"github.com/alecthomas/chroma"
 	"github.com/alecthomas/chroma/lexers"
@@ -150,7 +147,12 @@ func (tb *TextBuffer) Insert(r rune) {
 	tb.lines[lineNum].Insert(offset, byte(r))
 	tb.UpdateLineStyle(lineNum)
 	tb.CursorRight()
-	tb.UpdateAutocompleteItems()
+}
+
+func (tb *TextBuffer) InsertString(str string) {
+	for _, b := range str {
+		tb.Insert(rune(b))
+	}
 }
 
 func (tb *TextBuffer) Tab() {
@@ -194,7 +196,6 @@ func (tb *TextBuffer) Backspace() {
 		tb.UpdateLineStyle(lineNum)
 		tb.CursorUp()
 	}
-	tb.UpdateAutocompleteItems()
 }
 
 func (tb *TextBuffer) Return() {
@@ -278,36 +279,21 @@ func (tb *TextBuffer) String() string {
 }
 
 func (tb *TextBuffer) UpdateAutocompleteItems() {
+	offset, lineNum := tb.cursor.Get()
+	if offset-1 < 0 {
+		return
+	}
+	if tb.lines[lineNum].Bytes()[offset-1] == ' ' {
+		return
+	}
 
-	globalOffset := strconv.Itoa(tb.GlobalOffset())
+	globalOffset := tb.GlobalOffset()
 	var buffer bytes.Buffer
 	for _, line := range tb.lines {
 		buffer.WriteString(line.String())
 		buffer.WriteString("\n")
 	}
 
-	var resultBuffer bytes.Buffer
+	go AutoComplete(tb.fileType, tb.url, globalOffset, &buffer)
 
-	go func() {
-		c := exec.Command("gocode", "-f=json", "-source", "-builtin", "-unimported-packages", "autocomplete", tb.url, "c"+globalOffset)
-		c.Stdin = &buffer
-		c.Stdout = &resultBuffer
-		c.Run()
-
-		var res []interface{}
-		json.Unmarshal(resultBuffer.Bytes(), &res)
-
-		if res == nil {
-			return
-		}
-
-		var completeItems []string
-		for _, item := range res[1].([]interface{}) {
-			completeItemName := item.(map[string]interface{})["name"].(string)
-			completeItems = append(completeItems, completeItemName)
-		}
-
-		autocompleteList.LoadItems(completeItems)
-		textEditor.Display()
-	}()
 }

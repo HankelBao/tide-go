@@ -15,6 +15,8 @@ var (
 	statusLine       *StatusLine
 	textEditor       *TextEditor
 	autocompleteList *AutocompleteList
+	hintLine         *HintLine
+	fileSelector     *FileSelector
 )
 
 func main() {
@@ -31,9 +33,10 @@ func main() {
 	textBuffers = append(textBuffers, firstTextBuffer)
 
 	statusLine = InitStatusLine()
-	fileSelector = InitFileSelector()
 	textEditor = InitTextEditor(firstTextBuffer)
 	autocompleteList = InitAutocompleteList()
+	hintLine = InitHintLine()
+	fileSelector = InitFileSelector()
 
 	fileSelector.displayRange.width.RefLength([]*Length{}, WidthScale)
 	fileSelector.displayRange.height.AbsoluteLength(0)
